@@ -7,8 +7,8 @@ from .processor import PDFProcessor
 from .config import settings
 
 class PDFHandler(FileSystemEventHandler):
-    def __init__(self):
-        self.processor = PDFProcessor(settings)
+    def __init__(self, extractor):
+        self.processor = PDFProcessor(settings, extractor)
         self._process_existing_files()
     
     def _process_existing_files(self):
@@ -26,8 +26,8 @@ class PDFHandler(FileSystemEventHandler):
             logger.info(f"New PDF detected: {file_path}")
             self.processor.process_pdf(file_path)
 
-def start_watching():
-    event_handler = PDFHandler()
+def start_watching(extractor):
+    event_handler = PDFHandler(extractor)
     observer = Observer()
     observer.schedule(event_handler, str(settings.INPUT_DIR), recursive=False)
     observer.start()

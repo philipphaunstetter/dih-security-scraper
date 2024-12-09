@@ -7,10 +7,10 @@ from .config import Settings
 from .extractor import SafetyNotesExtractor
 
 class PDFProcessor:
-    def __init__(self, config: Settings):
+    def __init__(self, config: Settings, extractor: SafetyNotesExtractor = None):
         self.config = config
         self.converter = DocumentConverter()
-        self.extractor = SafetyNotesExtractor()
+        self.extractor = extractor or SafetyNotesExtractor()
         self.image_only_file = self.config.OUTPUT_DIR / "no_real_text.md"
     
     def _is_mostly_images(self, content: str, threshold: float = 0.8) -> bool:

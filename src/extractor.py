@@ -2,9 +2,52 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from loguru import logger
+import torch
+import platform
+import time
 
 class SafetyNotesExtractor:
-    def __init__(self):
+    def __init__(self, force_cpu=False):
+        # Check for GPU availability
+        if not force_cpu and torch.cuda.is_available():  # NVIDIA GPU
+            self.device = torch.device('cuda')
+            logger.info(f"Using NVIDIA GPU: {torch.cuda.get_device_name(0)}")
+            logger.info(f"GPU Properties:")
+            logger.info(f"  - Total Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**2:.0f}MB")
+            logger.info(f"  - CUDA Version: {torch.version.cuda}")
+            
+            # Add GPU memory tracking
+            logger.info("Initial GPU Memory Usage:")
+            logger.info(f"  - Allocated: {torch.cuda.memory_allocated(0)/1024**2:.2f}MB")
+            logger.info(f"  - Reserved: {torch.cuda.memory_reserved(0)/1024**2:.2f}MB")
+            
+            # Force CUDA initialization with a larger operation
+            warmup_tensor = torch.randn(1000, 1000).to(self.device)
+            warmup_result = torch.matmul(warmup_tensor, warmup_tensor.T)
+            logger.info("CUDA warmup completed")
+            
+        elif not force_cpu and torch.backends.mps.is_available():  # Apple Silicon
+            self.device = torch.device('mps')
+            logger.info(f"Using Apple Silicon GPU on {platform.processor()}")
+        else:  # CPU
+            self.device = torch.device('cpu')
+            logger.info("Using CPU" + (" (forced)" if force_cpu else ""))
+            
+        # Test device with performance measurement
+        start_time = time.perf_counter()
+        test_tensor = torch.tensor([1.0, 2.0, 3.0]).to(self.device)
+        for _ in range(1000):  # Small benchmark
+            _ = test_tensor * 2
+        end_time = time.perf_counter()
+        logger.info(f"Test tensor on {test_tensor.device}: {test_tensor}")
+        logger.info(f"Simple operation benchmark time: {(end_time - start_time)*1000:.2f}ms")
+        
+        # After benchmark
+        if self.device.type == 'cuda':
+            logger.info("GPU Memory Usage after benchmark:")
+            logger.info(f"  - Allocated: {torch.cuda.memory_allocated(0)/1024**2:.2f}MB")
+            logger.info(f"  - Reserved: {torch.cuda.memory_reserved(0)/1024**2:.2f}MB")
+        
         self.safety_headers = {
             'en': [
                 "3. Safety Notes",
@@ -15,7 +58,6 @@ class SafetyNotesExtractor:
                 "## Risk of electric shock",                
                 "Safety Information",
                 "## 2. Safety Instructions",
-                "Safety Instructions",
                 "## Safety notes on charging units",
             ],
             'de': [
