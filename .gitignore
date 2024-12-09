@@ -3,3 +3,4 @@
 ./logs/
 ./processed/
 ./failed/
+./src/__pycache__/
