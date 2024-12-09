@@ -1,20 +1,19 @@
-import torch
+from loguru import logger
+from src.watcher import start_watching
+from src.config import settings
 
-def check_device():
-    if torch.cuda.is_available():
-        print("GPU available - using CUDA")
-        print(f"Device: {torch.cuda.get_device_name(0)}")
-    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-        print("GPU available - using Metal (MPS)")
-    else:
-        print("No GPU detected - using CPU")
-
-    # Create a sample tensor - it will automatically use the best available device
-    device = torch.device("cuda" if torch.cuda.is_available() 
-                         else "mps" if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available() 
-                         else "cpu")
-    tensor = torch.rand(3, 3, device=device)
-    print(f"\nCreated tensor on {device}:\n{tensor}")
+def main():
+    logger.info("Starting Safety Notes Extractor...")
+    logger.info(f"Watching directory: {settings.INPUT_DIR}")
+    logger.info(f"Output directory: {settings.OUTPUT_DIR}")
+    
+    try:
+        start_watching()
+    except KeyboardInterrupt:
+        logger.info("Shutting down...")
+    except Exception as e:
+        logger.error(f"Fatal error: {str(e)}")
+        raise
 
 if __name__ == "__main__":
-    check_device() 
+    main() 
