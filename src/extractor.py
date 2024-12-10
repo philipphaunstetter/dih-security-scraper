@@ -64,92 +64,98 @@ class SafetyNotesExtractor:
             logger.info(f"  - Reserved: {torch.cuda.memory_reserved(0)/1024**2:.2f}MB")
         
         self.safety_headers = {
-            'en': [       
-                "## Safety Information",
-                "## 2. Safety Notes",
-                "## 3. Safety Notes",
-                "## 4. Safety Notes",
-                "## Safety Notes",
-                "## 2. Safety Instructions",
-                "## 3. Safety Instructions",
-                "## 4. Safety Instructions",
-                "## Warning",
-                "## Risk of electric shock",         
-            ],
+            #'en': [       
+            #    "## Safety Information",
+            #    "## 2. Safety Notes",
+            #    "## 3. Safety Notes",
+            #    "## 4. Safety Notes",
+            #    "## Safety Notes",
+            #    "## 2. Safety Instructions",
+            #    "## 3. Safety Instructions",
+            #    "## 4. Safety Instructions",
+            #    "## Warning",
+            #    "## Risk of electric shock",         
+            #],
             'de': [
                 "## Sicherheitshinweise",
+                "## 1. Sicherheitshinweise",
                 "## 2. Sicherheitshinweise",
                 "## 3. Sicherheitshinweise",
                 "## 4. Sicherheitshinweise",
                 "## Warnung",
                 "## Gefahr eines elektrischen Schlages",
+                "## Gefahr eines elektrischenSchlages",
+                "## 2.2 Grundlegende Sicherheitshinweise",
+                "## 2.1 Grundlegende Sicherheitshinweise",
             ],
-            'fr': [
-                "## Consignes de sécurité",
-                "## 2. Consignes de sécurité",
-                "## 3. Consignes de sécurité",
-                "## 4. Consignes de sécurité",
-                "## Risque d’électrocution",
-                "## Avertissement",
-            ],
-            'es': [
-                "## Indicaciones de seguridad",
-                "## 2. Indicaciones de seguridad",
-                "## 3. Indicaciones de seguridad",
-                "## 4. Indicaciones de seguridad",
-                "## Peligro de sufrir una descarga eléctrica",
-                "## Aviso",
-            ],
-            'ru': [
-                "## Указания по технике безопасности",
-                "## 2. Указания по технике безопасности",
-                "## 3. Указания по технике безопасности",
-                "## 4. Указания по технике безопасности",
-                "## Предупреждение",
-                "## Опасность поражения электрическим током",
-            ],
-            'it': [
-                "## Istruzioni di sicurezza",
-                "## 2. Istruzioni di sicurezza",
-                "## 3. Istruzioni di sicurezza",
-                "## 4. Istruzioni di sicurezza",
-                "## Pericolo di scarica elettrica",
-                "## Attenzione",
-            ]
+            #'fr': [
+            #    "## Consignes de sécurité",
+            #    "## 2. Consignes de sécurité",
+            #    "## 3. Consignes de sécurité",
+            #    "## 4. Consignes de sécurité",
+            #    "## Risque d’électrocution",
+            #    "## Avertissement",
+            #],
+            #'es': [
+            #    "## Indicaciones de seguridad",
+            #    "## 2. Indicaciones de seguridad",
+            #    "## 3. Indicaciones de seguridad",
+            #    "## 4. Indicaciones de seguridad",
+            #    "## Peligro de sufrir una descarga eléctrica",
+            #    "## Aviso",
+            #],
+            #'ru': [
+            #    "## Указания по технике безопасности",
+            #    "## 2. Указания по технике безопасности",
+            #    "## 3. Указания по технике безопасности",
+            #    "## 4. Указания по технике безопасн��сти",
+            #    "## Предупреждение",
+            #    "## Опасность поражения электрическим током",
+            #],
+            #'it': [
+            #    "## Istruzioni di sicurezza",
+            #    "## 2. Istruzioni di sicurezza",
+            #    "## 3. Istruzioni di sicurezza",
+            #    "## 4. Istruzioni di sicurezza",
+            #    "## Pericolo di scarica elettrica",
+            #    "## Attenzione",
+            #]
         }
         
         # Add ignore phrases for each language
         self.ignore_phrases = {
-            'en': [
-                "This symbol indicates a risk of electric shock from touching product parts carrying hazardous voltage.",
-                "This symbol is used to indicate safety instructions or to draw your attention to specific hazards and risks",
-                "This symbol is used to indicate additional information or important notes.",
-            ],
+            #'en': [
+            #    "This symbol indicates a risk of electric shock from touching product parts carrying hazardous voltage.",
+            #    "This symbol is used to indicate safety instructions or to draw your attention to specific hazards and risks",
+            #    "This symbol is used to indicate additional information or important notes.",
+            #],
             'de': [
                 "Dieses Symbol weist auf eine Berührungsgefahr mit nicht isolierten Teilen des Produktes hin, die möglicherweise eine gefährliche Spannung von solcher Höhe führen, dass die Gefahr eines elektrischen Schlags besteht.",
                 "Wird verwendet, um Sicherheitshinweise zu kennzeichnen oder um Aufmerksamkeit auf besondere Gefahren und Risiken zu lenken.",
                 "Wird verwendet, um zusätzlich Informationen oder wichtige Hinweise zu kennzeichnen.",
+                "Wirdverwendet, um Sicherheitshinweise zu kennzeichnen oder um Aufmerksamkeit auf besondereGefahren und Risiken zu lenken.",
+                "Wird verwendet, um Sicherheitshinweise zu kennzeichnen oder um Aufmerksamkeit auf besondere Gefahren und Risiken zu lenken .",
             ],
-            'fr': [
-                "Ce symbole indique un risque de contact avec des parties non isolées du produit susceptibles de conduire un courant électrique capable de provoquer une électrocution.",
-                "Ce symbole est utilisé pour indiquer des consignes de sécurité ou pour attirer votre attention sur des dangers et risques particuliers.",
-                "Ce symbole est utilisé pour indiquer des informations supplémentaires ou des remarques importantes.",
-            ],
-            'es': [
-                "Este símbolo hace referencia al peligro de contacto con partes no aisladas del producto que pueden conducir una tensión peligrosa de una intensidad tal que puede provocar una descarga eléctrica.",
-                "Se utiliza para indicar indicaciones de seguridad o para llamar la atención sobre peligros y riesgos especiales.",
-                "Se utiliza para indicar información adicional o indicaciones importantes.",
-            ],
-            'ru': [
-                "Данный символ указывает на опасность соприкосновения с неизолированными частями изделия под напряжением, которое может привести к поражению электрическим током.",
-                "Используется для обозначения указаний по технике безопасности или для акцентирования внимания на особых опасностях и рисках.",
-                "Используется для дополнительного обозначения информации или важных указаний.",
-            ],
-            'it': [
-                "Questo simbolo indica la presenza di pericoli dovuti al contatto con parti del prodotto sotto tensione, di entità tale da comportare il rischio di scarica elettrica.",
-                "Contraddistingue le istruzioni di sicurezza o richiama l’attenzione su particolari rischi e pericoli.",
-                "Contraddistingue informazioni supplementari o indicazioni importanti.",
-            ]
+            #'fr': [
+            #    "Ce symbole indique un risque de contact avec des parties non isolées du produit susceptibles de conduire un courant électrique capable de provoquer une électrocution.",
+            #    "Ce symbole est utilisé pour indiquer des consignes de sécurité ou pour attirer votre attention sur des dangers et risques particuliers.",
+            #    "Ce symbole est utilisé pour indiquer des informations supplémentaires ou des remarques importantes.",
+            #],
+            #'es': [
+            #    "Este símbolo hace referencia al peligro de contacto con partes no aisladas del producto que pueden conducir una tensión peligrosa de una intensidad tal que puede provocar una descarga eléctrica.",
+            #    "Se utiliza para indicar indicaciones de seguridad o para llamar la atención sobre peligros y riesgos especiales.",
+            #    "Se utiliza para indicar información adicional o indicaciones importantes.",
+            #],
+            #'ru': [
+            #    "Данный символ указывает на опасность соприкосновения с неизолированными частями изделия под напряжением, которое может привести к поражению электрическим током.",
+            #    "Используется для обозначения указаний по технике безопасности или для акцентирования внимания на особых опасностях и рисках.",
+            #    "Используется для дополнительного обозначения информации или важных указаний.",
+            #],
+            #'it': [
+            #    "Questo simbolo indica la presenza di pericoli dovuti al contatto con parti del prodotto sotto tensione, di entità tale da comportare il rischio di scarica elettrica.",
+            #    "Contraddistingue le istruzioni di sicurezza o richiama l’attenzione su particolari rischi e pericoli.",
+            #    "Contraddistingue informazioni supplementari o indicazioni importanti.",
+            #]
         }
     
     def _extract_section_content(self, content: str, header: str) -> tuple[list[str], list[str]]:
@@ -276,8 +282,10 @@ class SafetyNotesExtractor:
         cleaned_lines = [line for line in lines if "<!-- image -->" not in line]
         content = '\n'.join(cleaned_lines)
         
-        # Remove bullet points "· "
-        content = content.replace("· ", "")
+        # Clean up bullet points: replace "- ·" with "- "
+        content = content.replace("- ·", "- ")
+        content = content.replace("- • ", "- ")  # Also handle bullet point variant
+        content = content.replace("- ► ", "- ")  # Handle arrow bullet point
         
         # Then remove sections with ignore phrases
         lines = content.split('\n')
