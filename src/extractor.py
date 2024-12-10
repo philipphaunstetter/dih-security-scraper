@@ -8,6 +8,21 @@ import time
 
 class SafetyNotesExtractor:
     def __init__(self, force_cpu=False):
+        try:
+            import torch
+        except ImportError:
+            logger.error("PyTorch not found. Installing required packages...")
+            try:
+                from scripts.install_torch import install_torch
+                install_torch()
+                import torch
+            except Exception as e:
+                logger.error(f"Failed to install PyTorch: {e}")
+                logger.info("Please install PyTorch manually:")
+                logger.info("Windows (CUDA): pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121")
+                logger.info("Mac/Linux: pip install torch torchvision torchaudio")
+                raise
+        
         # Check for GPU availability
         if not force_cpu and torch.cuda.is_available():  # NVIDIA GPU
             self.device = torch.device('cuda')
